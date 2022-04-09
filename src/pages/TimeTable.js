@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import FullCalendar from '@fullcalendar/react';
+import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -17,7 +18,7 @@ import Box from '@material-ui/core/Box';
 
 import './TimeTable.css';
 
-function TimeTable({ eventList, handleNewCustomEvent }) {
+function TimeTable({ eventList, handleNewCustomEvent, handleDeleteEvent }) {
   const [open, setOpen] = useState(false);
   const [def, setDefault] = useState(null);
   const [showAimsError, setShowAimsError] = useState(
@@ -30,6 +31,7 @@ function TimeTable({ eventList, handleNewCustomEvent }) {
   let eventDate = null;
   let startTime = null;
   let endTime = null;
+  // let note = "";
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -79,6 +81,23 @@ function TimeTable({ eventList, handleNewCustomEvent }) {
     setOpen(false);
   };
 
+  // deletes custom event on click
+  const handleDelete = (clickInfo) => {
+    console.log(clickInfo.event.start.toISOString());
+    if (
+      window.confirm(
+        `Are you sure you want to delete the event '${clickInfo.event.title}'`,
+      )
+    ) {
+      clickInfo.event.remove();
+      handleDeleteEvent(
+        clickInfo.event.title,
+        clickInfo.event.start.toISOString(),
+        clickInfo.event.end.toISOString(),
+      );
+    }
+  };
+
   const handleTitleChange = (event) => {
     title = event.target.value;
   };
@@ -115,7 +134,7 @@ function TimeTable({ eventList, handleNewCustomEvent }) {
   return (
     <div id="calendar-div">
       <FullCalendar
-        plugins={[dayGridPlugin, timeGridPlugin]}
+        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="timeGridWeek"
         headerToolbar={{
           left: 'prev,today,next',
@@ -126,12 +145,14 @@ function TimeTable({ eventList, handleNewCustomEvent }) {
           hour12: false,
         }}
         expandRows={false}
+        selectable
         scrollTime="09:00:00"
         eventOverlap
         slotEventOverlap={false}
         nowIndicator
         allDaySlot={false}
         events={eventList}
+        eventClick={handleDelete}
         height="70vh"
       />
 
@@ -214,6 +235,13 @@ function TimeTable({ eventList, handleNewCustomEvent }) {
               shrink: true,
             }}
           />
+          {/* <TextField
+          margin="dense"
+          id="notes"
+          label="Add note"
+          fullWidth
+          onChange={handleNoteChange}
+          /> */}
         </DialogContent>
         <DialogActions>
           <Button
@@ -232,12 +260,16 @@ function TimeTable({ eventList, handleNewCustomEvent }) {
 TimeTable.propTypes = {
   eventList: PropTypes.arrayOf(PropTypes.object),
   handleNewCustomEvent: PropTypes.func,
+  handleDeleteEvent: PropTypes.func,
 };
 
 TimeTable.defaultProps = {
   eventList: [],
   handleNewCustomEvent: () => {
     alert('Error, please try again later');
+  },
+  handleDeleteEvent: () => {
+    alert('Error');
   },
 };
 
