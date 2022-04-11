@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import firebase from 'firebase/app';
 import 'firebase/auth';
@@ -20,7 +20,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { Switch, FormControlLabel } from '@material-ui/core';
 import './NavBarDrawer.css';
-
+import Box from '@material-ui/core/Box';
+import BrightnessHighIcon from '@material-ui/icons/BrightnessHigh';
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
   },
   toolbar: theme.mixins.toolbar,
   drawerPaper: {
-    width: drawerWidth,
+    // width: drawerWidth,
   },
   drawerContainer: {
     overflow: 'auto',
@@ -52,10 +53,85 @@ const useStyles = makeStyles((theme) => ({
 function NavbarDrawer({ updateTT, toggleTheme }) {
   const classes = useStyles();
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const handleDrawerToggle = () => {
+  function handleDrawerToggle() {
     setMobileOpen(!mobileOpen);
+  }
+  const [currentTab, setCurrentTab] = useState('');
+  const [isMobile, setIsMobile] = useState(true);
+  const handleTabChange = (_, newTab) => {
+    setCurrentTab(newTab);
   };
+  useEffect(() => {
+    const currentPage = window.location.pathname;
+    // Delete the slash prefix
+    setCurrentTab(currentPage.substr(1));
+  }, [setCurrentTab]);
+  useEffect(() => {
+    setIsMobile(window.innerWidth <= 500);
+    window.addEventListener('resize', () => {
+      setIsMobile(window.innerWidth <= 500);
+    });
+  }, []);
   const drawer = (
+    <div >
+      <Box display="flex" flexGrow={1}>
+      <List>
+        <ListItem
+          button
+          key="Sync with aims timetable"
+          type="submit"
+          onClick={updateTT}
+        >
+          <ListItemIcon>
+            <SyncIcon  />
+          </ListItemIcon>
+          {/* <ListItemText primary="Sync with AIMS Timetable" /> */}
+        </ListItem>
+      </List>
+      <List>
+        <ListItem
+          button
+          key="Sync with aims timetable"
+          type="submit"
+          onClick={toggleTheme}
+        >
+          <ListItemIcon>
+            <BrightnessHighIcon/>
+          </ListItemIcon>
+          {/* <ListItemText primary="Sync with AIMS Timetable" /> */}
+        </ListItem>
+      </List>
+      <List>
+        <ListItem
+          button
+          key="Logout"
+          type="submit"
+          onClick={() => {
+            localStorage.clear();
+            firebase.auth().signOut();
+            window.location.reload();
+          }}
+        >
+          <ListItemIcon>
+            <ExitToAppIcon />
+          </ListItemIcon>
+          {/* <ListItemText primary="Logout" /> */}
+        </ListItem>
+      </List>
+ 
+      {/* <List>
+        <ListItem>
+          <FormControlLabel
+            control={<Switch onChange={toggleTheme} />}
+            // label="Toggle Theme"
+          />
+        </ListItem>
+      </List> */}
+      </Box>
+    </div>
+  );
+
+  const drawerlist = (
     <div>
       <Divider />
       <List>
@@ -105,7 +181,7 @@ function NavbarDrawer({ updateTT, toggleTheme }) {
       <CssBaseline />
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
-          <IconButton
+          { isMobile?<IconButton
             color="inherit"
             aria-label="Open drawer"
             edge="start"
@@ -113,11 +189,17 @@ function NavbarDrawer({ updateTT, toggleTheme }) {
             className={classes.menuButton}
           >
             <MenuIcon />
-          </IconButton>
+          </IconButton>:null }
+                    <Box display='flex' flexGrow={1}>
           <Typography variant="h6" noWrap>
             IITH Dashboard
           </Typography>
+          </Box>
+
+ 
+      {isMobile?'':drawer}
         </Toolbar>
+        
       </AppBar>
 
       <nav className={classes.drawer}>
@@ -134,7 +216,7 @@ function NavbarDrawer({ updateTT, toggleTheme }) {
               keepMounted: true, // Better open performance on mobile.
             }}
           >
-            {drawer}
+        {drawerlist}
           </Drawer>
         </Hidden>
         <Hidden xsDown implementation="css">
