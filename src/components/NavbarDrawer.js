@@ -78,18 +78,18 @@ function NavbarDrawer({ updateTT, toggleTheme }) {
       <Box display="flex" flexGrow={1}>
         <IconButton
           padding={10}
-          key="Sync with aims timetable"
+          key="Sync with AIMS Timetable"
           type="submit"
           onClick={updateTT}
           onMouseOver
-          title="Sync with aims timetable"
+          title="Sync with AIMS Timetable"
         >
           <SyncIcon />
         </IconButton>
         <Box width={20} />
         <IconButton
           onMouseOver
-          title="Toggle theme"
+          title="Toggle Theme"
           type="submit"
           onClick={toggleTheme}
         >
