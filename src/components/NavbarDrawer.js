@@ -22,6 +22,7 @@ import { Switch, FormControlLabel } from '@material-ui/core';
 import './NavBarDrawer.css';
 import Box from '@material-ui/core/Box';
 import BrightnessHighIcon from '@material-ui/icons/BrightnessHigh';
+
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,9 +56,9 @@ function NavbarDrawer({ updateTT, toggleTheme }) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   function handleDrawerToggle() {
     setMobileOpen(!mobileOpen);
-  }
-  const [currentTab, setCurrentTab] = useState('');
-  const [isMobile, setIsMobile] = useState(true);
+  } // eslint-disable-next-line
+  const [currentTab, setCurrentTab] = useState("");
+  const [isMobile, setIsMobile] = useState(true); // eslint-disable-next-line
   const handleTabChange = (_, newTab) => {
     setCurrentTab(newTab);
   };
@@ -72,66 +73,47 @@ function NavbarDrawer({ updateTT, toggleTheme }) {
       setIsMobile(window.innerWidth <= 500);
     });
   }, []);
-  const drawer = (
-    <div >
+  const drawer1 = (
+    <div>
       <Box display="flex" flexGrow={1}>
-      <List>
-        <ListItem
-          button
+        <IconButton
+          padding={10}
           key="Sync with aims timetable"
           type="submit"
           onClick={updateTT}
+          onMouseOver
+          title="Sync with aims timetable"
         >
-          <ListItemIcon>
-            <SyncIcon  />
-          </ListItemIcon>
-          {/* <ListItemText primary="Sync with AIMS Timetable" /> */}
-        </ListItem>
-      </List>
-      <List>
-        <ListItem
-          button
-          key="Sync with aims timetable"
+          <SyncIcon />
+        </IconButton>
+        <Box width={20} />
+        <IconButton
+          onMouseOver
+          title="Toggle theme"
           type="submit"
           onClick={toggleTheme}
         >
-          <ListItemIcon>
-            <BrightnessHighIcon/>
-          </ListItemIcon>
-          {/* <ListItemText primary="Sync with AIMS Timetable" /> */}
-        </ListItem>
-      </List>
-      <List>
-        <ListItem
-          button
-          key="Logout"
+          <BrightnessHighIcon />
+        </IconButton>
+        <Box width={20} />
+        <IconButton
           type="submit"
           onClick={() => {
             localStorage.clear();
             firebase.auth().signOut();
             window.location.reload();
           }}
+          onMouseOver
+          title="Logout"
         >
-          <ListItemIcon>
-            <ExitToAppIcon />
-          </ListItemIcon>
-          {/* <ListItemText primary="Logout" /> */}
-        </ListItem>
-      </List>
- 
-      {/* <List>
-        <ListItem>
-          <FormControlLabel
-            control={<Switch onChange={toggleTheme} />}
-            // label="Toggle Theme"
-          />
-        </ListItem>
-      </List> */}
+          <ExitToAppIcon />
+        </IconButton>
+        <Box width={20} />
       </Box>
     </div>
   );
 
-  const drawerlist = (
+  const drawer2 = (
     <div>
       <Divider />
       <List>
@@ -181,33 +163,32 @@ function NavbarDrawer({ updateTT, toggleTheme }) {
       <CssBaseline />
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar>
-          { isMobile?<IconButton
-            color="inherit"
-            aria-label="Open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            className={classes.menuButton}
-          >
-            <MenuIcon />
-          </IconButton>:null }
-                    <Box display='flex' flexGrow={1}>
-          <Typography variant="h6" noWrap>
-            IITH Dashboard
-          </Typography>
+          {isMobile ? (
+            <IconButton
+              color="inherit"
+              aria-label="Open drawer"
+              edge="start" // eslint-disable-next-line
+              onClick={handleDrawerToggle}
+              className={classes.menuButton}
+            >
+              <MenuIcon />
+            </IconButton>
+          ) : null}
+          <Box display="flex" flexGrow={1} paddingLeft={3}>
+            <Typography variant="h6" noWrap>
+              IITH Dashboard
+            </Typography>
           </Box>
-
- 
-      {isMobile?'':drawer}
+          {isMobile ? '' : drawer1}
         </Toolbar>
-        
       </AppBar>
 
       <nav className={classes.drawer}>
         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
         <Hidden smUp implementation="css">
           <Drawer
-            variant="temporary"
-            open={mobileOpen}
+            variant="temporary" // eslint-disable-next-line
+            open={mobileOpen} // eslint-disable-next-line
             onClose={handleDrawerToggle}
             classes={{
               paper: classes.drawerPaper,
@@ -216,7 +197,7 @@ function NavbarDrawer({ updateTT, toggleTheme }) {
               keepMounted: true, // Better open performance on mobile.
             }}
           >
-        {drawerlist}
+            {drawer2}
           </Drawer>
         </Hidden>
         <Hidden xsDown implementation="css">
@@ -228,7 +209,7 @@ function NavbarDrawer({ updateTT, toggleTheme }) {
             }}
           >
             <div className={classes.toolbar} />
-            {drawer}
+            {drawer2}
           </Drawer>
         </Hidden>
       </nav>
