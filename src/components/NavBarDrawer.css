@@ -1,9 +1,3 @@
 img {
   height: 1.2em;
 }
-button {
-  align-items: center;
-}
-.MuiListItemIcon-alignItemsFlexStart {
-  align-items: "flex-start";
-}
