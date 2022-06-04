@@ -1,5 +1,3 @@
-import moment from 'moment';
-
 const segmentStartDates = [
   '2022-01-03 00:00:00',
   '2022-01-20 00:00:00',
@@ -228,11 +226,13 @@ function makeEventList(aimsTimeTable, customEventList) {
       );
 
       const slot = aimsTimeTable.identifiedSlots[index];
-      const segmentStartDate = moment(segmentStartDates[startSegment - 1]);
-      const segmentEndDate = moment(segmentEndDates[endSegment - 1]).add(
-        1,
-        'days',
-      ); // adding 1 more day because FC endRecur is exclusive
+      const segmentStartDate = segmentStartDates[startSegment - 1];
+      const segmentEndDate = segmentEndDates[endSegment - 1];
+
+      // adding 1 more day because FC endRecur is exclusive
+      const fcEndDate = new Date(
+        Date.parse(segmentEndDate) + 60 * 60 * 24 * 1000,
+      );
       let courseDisplayName = courseCode;
 
       if (aimsTimeTable.identifiedCourseNames?.[index]) {
@@ -240,21 +240,19 @@ function makeEventList(aimsTimeTable, customEventList) {
       }
 
       slotInfo[slot].forEach((currSlot) => {
-        const courseTime = segmentStartDate
-          .clone()
-          .weekday(currSlot.day)
-          .add(currSlot.hour, 'hours')
-          .add(currSlot.minute, 'minutes');
+        const startTime = new Date(segmentStartDate);
+        startTime.setHours(currSlot.hour, currSlot.minute, 0);
+
+        const endTime = new Date(
+          startTime.getTime() + currSlot.duration * 60000,
+        );
 
         courseEvents.push({
           title: courseDisplayName,
-          startRecur: segmentStartDate.toDate(),
-          endRecur: segmentEndDate.toDate(),
-          startTime: courseTime.format('HH:mm:ss'),
-          endTime: courseTime
-            .clone()
-            .add(currSlot.duration, 'minutes')
-            .format('HH:mm:ss'),
+          startRecur: segmentStartDate,
+          endRecur: fcEndDate,
+          startTime: startTime.toTimeString().split(' ')[0],
+          endTime: endTime.toTimeString().split(' ')[0],
           daysOfWeek: [currSlot.day],
         });
       });
