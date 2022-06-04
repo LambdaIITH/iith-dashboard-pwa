@@ -226,13 +226,11 @@ function makeEventList(aimsTimeTable, customEventList) {
       );
 
       const slot = aimsTimeTable.identifiedSlots[index];
-      const segmentStartDate = segmentStartDates[startSegment - 1];
-      const segmentEndDate = segmentEndDates[endSegment - 1];
+      const segmentStartDate = new Date(segmentStartDates[startSegment - 1]);
+      const segmentEndDate = new Date(segmentEndDates[endSegment - 1]);
 
       // adding 1 more day because FC endRecur is exclusive
-      const fcEndDate = new Date(
-        Date.parse(segmentEndDate) + 60 * 60 * 24 * 1000,
-      );
+      const fcEndDate = new Date(segmentEndDate.getTime() + 3600 * 24 * 1000);
       let courseDisplayName = courseCode;
 
       if (aimsTimeTable.identifiedCourseNames?.[index]) {
@@ -240,7 +238,7 @@ function makeEventList(aimsTimeTable, customEventList) {
       }
 
       slotInfo[slot].forEach((currSlot) => {
-        const startTime = new Date(segmentStartDate);
+        const startTime = segmentStartDate;
         startTime.setHours(currSlot.hour, currSlot.minute, 0);
 
         const endTime = new Date(
