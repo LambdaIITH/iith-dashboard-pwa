@@ -24,7 +24,8 @@ precacheAndRoute(self.__WB_MANIFEST); //eslint-disable-line
 // Set up App Shell-style routing, so that all navigation requests
 // are fulfilled with your index.html shell. Learn more at
 // https://developers.google.com/web/fundamentals/architecture/app-shell
-const fileExtensionRegexp = new RegExp('/[^/?]+\\.[^/]+$');
+/* eslint-disable-next-line */
+const fileExtensionRegexp = new RegExp("/[^/?]+\\.[^/]+$");
 registerRoute(
   // Return false to exempt requests from being fulfilled by index.html.
   ({ request, url }) => {
@@ -70,3 +71,12 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
+
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+  // console.log(url);
+  if (url.hostname === 'iith.dev') {
+    event.respondWith(new StaleWhileRevalidate().handle({ event, request }));
+  }
+});
