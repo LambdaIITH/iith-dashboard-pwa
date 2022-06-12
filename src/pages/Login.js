@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Container } from '@material-ui/core';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import logo from '../logo.png';
 
 const googleProvider = new firebase.auth.GoogleAuthProvider();
