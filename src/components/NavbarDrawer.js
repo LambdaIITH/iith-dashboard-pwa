@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import firebase from 'firebase/compat/app';
-import 'firebase/auth';
+import { getAuth, signOut } from 'firebase/auth';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
@@ -55,6 +54,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function NavbarDrawer({ updateTT, toggleTheme }) {
+  const auth = getAuth();
   const classes = useStyles();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const handleDrawerToggle = () => {
@@ -94,7 +94,7 @@ function NavbarDrawer({ updateTT, toggleTheme }) {
           type="submit"
           onClick={() => {
             localStorage.clear();
-            firebase.auth().signOut();
+            signOut(auth);
             window.location.reload();
           }}
           title="Logout"
@@ -130,7 +130,7 @@ function NavbarDrawer({ updateTT, toggleTheme }) {
           type="submit"
           onClick={() => {
             localStorage.clear();
-            firebase.auth().signOut();
+            signOut(auth);
             window.location.reload();
           }}
         >

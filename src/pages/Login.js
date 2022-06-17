@@ -1,17 +1,17 @@
 import React from 'react';
 import { Button, Container } from '@material-ui/core';
-import firebase from 'firebase/compat/app';
+import { getAuth, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth';
 import logo from '../logo.png';
 
-const googleProvider = new firebase.auth.GoogleAuthProvider();
+const googleProvider = new GoogleAuthProvider();
 
 const login = () => {
+  const auth = getAuth();
   const provider = googleProvider;
   provider.addScope('profile');
   provider.addScope('email');
-  firebase
-    .auth()
-    .signInWithRedirect(provider)
+
+  signInWithRedirect(auth, provider)
     .then(() => {
       console.log('Success');
     })
