@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import firebase from 'firebase/compat/app';
+import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import 'firebase/compat/firestore';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { Container, CssBaseline } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -21,7 +21,7 @@ import { lightTheme, darkTheme } from './Themes';
 
 import './App.css';
 
-const firebaseApp = firebase.initializeApp({
+const firebaseApp = initializeApp({
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
   databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
@@ -59,7 +59,7 @@ function App() {
     localStorage.getItem(themeKey) === 'light' ? lightTheme : darkTheme,
   );
 
-  const db = firebase.firestore();
+  const db = getFirestore(firebaseApp);
 
   const addCustomEvent = (eventName, startTime, endTime) => {
     const newEvent = {
@@ -82,39 +82,34 @@ function App() {
     setCustomEvents((currentList) => [...currentList, newEvent]);
   };
 
-  const updateTT = () => {
+  const updateTT = async () => {
     if (user && !userLoading && !userError) {
-      const docRef = db.collection('users').doc(user.uid);
-      docRef
-        .get()
-        .then((doc) => {
-          if (doc.exists) {
-            const tt = {};
+      const docRef = doc(db, 'users', user.uid);
+      const docSnap = await getDoc(docRef);
 
-            tt.identifiedCourses = doc.data().identifiedCourses;
-            tt.identifiedSegments = doc.data().identifiedSegments;
-            tt.identifiedSlots = doc.data().identifiedSlots;
+      if (docSnap.exists()) {
+        const tt = {};
 
-            if ('identifiedCourseNames' in doc.data()) {
-              tt.identifiedCourseNames = doc.data().identifiedCourseNames;
-            } else {
-              tt.identifiedCourseNames = null;
-            }
+        tt.identifiedCourses = docSnap.data().identifiedCourses;
+        tt.identifiedSegments = docSnap.data().identifiedSegments;
+        tt.identifiedSlots = docSnap.data().identifiedSlots;
 
-            if (JSON.stringify(aimsTimetable) !== JSON.stringify(tt)) {
-              const newEventList = makeEventList(tt, customEvents);
-              localStorage.setItem(masterKey, JSON.stringify(newEventList));
-              setEventList(newEventList);
-              localStorage.setItem(aimsKey, JSON.stringify(tt));
-              setAimsTimetable(tt);
-            }
-          } else {
-            console.log('No such document');
-          }
-        })
-        .catch((err) => {
-          console.log('Error getting document:', err);
-        });
+        if ('identifiedCourseNames' in docSnap.data()) {
+          tt.identifiedCourseNames = docSnap.data().identifiedCourseNames;
+        } else {
+          tt.identifiedCourseNames = null;
+        }
+
+        if (JSON.stringify(aimsTimetable) !== JSON.stringify(tt)) {
+          const newEventList = makeEventList(tt, customEvents);
+          localStorage.setItem(masterKey, JSON.stringify(newEventList));
+          setEventList(newEventList);
+          localStorage.setItem(aimsKey, JSON.stringify(tt));
+          setAimsTimetable(tt);
+        }
+      } else {
+        console.log('No such document');
+      }
     }
   };
 
