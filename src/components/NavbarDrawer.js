@@ -16,11 +16,12 @@ import SyncIcon from '@material-ui/icons/Sync';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import Avatar from '@material-ui/core/Avatar';
 import { makeStyles } from '@material-ui/core/styles';
-import { Switch, FormControlLabel } from '@material-ui/core';
 import './NavBarDrawer.css';
 import Box from '@material-ui/core/Box';
 import BrightnessHighIcon from '@material-ui/icons/BrightnessHigh';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
@@ -38,9 +39,6 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   toolbar: theme.mixins.toolbar,
-  drawerPaper: {
-    // width: drawerWidth,
-  },
   drawerContainer: {
     overflow: 'auto',
   },
@@ -55,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
 
 function NavbarDrawer({ updateTT, toggleTheme }) {
   const auth = getAuth();
+  const [user, userLoading, userError] = useAuthState(auth);
   const classes = useStyles();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const handleDrawerToggle = () => {
@@ -108,6 +107,18 @@ function NavbarDrawer({ updateTT, toggleTheme }) {
 
   const drawerNavbarMenu = (
     <div>
+      <Box padding={2} display="flex" flexDirection="row">
+        <Avatar
+          alt={user.displayName}
+          style={{ marginRight: 16 }}
+          src={user.photoURL}
+        />
+        {!userLoading && !userError && user
+          ? user.displayName
+          : 'hello@example.com'}
+        <br />
+        {!userLoading && !userError && user ? user.email : 'hello@example.com'}
+      </Box>
       <Divider />
       <List>
         <ListItem
@@ -142,11 +153,11 @@ function NavbarDrawer({ updateTT, toggleTheme }) {
       </List>
       <Divider />
       <List>
-        <ListItem>
-          <FormControlLabel
-            control={<Switch onChange={toggleTheme} />}
-            label="Toggle Theme"
-          />
+        <ListItem button key="toggleTheme" onClick={toggleTheme}>
+          <ListItemIcon>
+            <BrightnessHighIcon />
+          </ListItemIcon>
+          <ListItemText primary="Toggle Theme" />
         </ListItem>
       </List>
     </div>
