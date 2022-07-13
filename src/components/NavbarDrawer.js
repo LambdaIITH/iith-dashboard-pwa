@@ -18,10 +18,10 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 import { makeStyles } from '@material-ui/core/styles';
-import './NavBarDrawer.css';
 import Box from '@material-ui/core/Box';
 import BrightnessHighIcon from '@material-ui/icons/BrightnessHigh';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import './NavBarDrawer.css';
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
