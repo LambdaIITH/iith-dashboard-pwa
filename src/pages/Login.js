@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Container } from '@material-ui/core';
-import { getAuth, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import logo from '../logo.png';
 
 const googleProvider = new GoogleAuthProvider();
@@ -11,7 +11,7 @@ const login = () => {
   provider.addScope('profile');
   provider.addScope('email');
 
-  signInWithRedirect(auth, provider)
+  signInWithPopup(auth, provider)
     .then(() => {
       console.log('Success');
     })
